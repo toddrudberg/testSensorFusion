@@ -1,0 +1,53 @@
+# Build Results
+bin/
+obj/
+*.dll
+*.exe
+*.log
+*.pdb
+
+# User-Specific Files
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+
+# Visual Studio specific files
+.vs/
+.vscode/
+
+# Backup files
+*.bak
+*.old
+*.swp
+*~
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
+
+# Logs and Reports
+*.log
+*.tlog
+*.trx
+*.coverage
+TestResults/
+
+# Package Management
+packages/
+*.nupkg
+project.lock.json
+
+# Dependencies
+lib/
+
+# IDE Specific Files
+.idea/
+_ReSharper/
+*.DotSettings.user
+
+# OS Generated Files
+Thumbs.db
+*.DS_Store
+
