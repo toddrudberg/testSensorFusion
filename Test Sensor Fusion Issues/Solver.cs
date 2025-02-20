@@ -87,7 +87,7 @@ namespace Test_Sensor_Fusion_Issues
             // Objective function
             Func<Vector<double>, double> objectiveFunction = (Vector<double> x) =>
             {
-                double sum = 0;
+                double sumsq = 0;
 
                 // Initialize transforms
                 cTransform xbase = new cTransform(0, 0, 0, x[0], x[1], x[2]);
@@ -113,11 +113,11 @@ namespace Test_Sensor_Fusion_Issues
                     double deltaRz = (normRz - measured[i].rz).m180p180();
 
                     // Sum of squared errors
-                    sum += Math.Pow(deltaRx, 2) + Math.Pow(deltaRy, 2) + Math.Pow(deltaRz, 2);
+                    sumsq += Math.Pow(deltaRx, 2) + Math.Pow(deltaRy, 2) + Math.Pow(deltaRz, 2);
 
                 }
 
-                return Math.Sqrt(sum);
+                return Math.Sqrt(sumsq);
             };
 
             // Numerical gradient calculation
@@ -145,10 +145,6 @@ namespace Test_Sensor_Fusion_Issues
 
             //double testOutput = testTransform(boreas, measured, boreasBase, boreasTool);
 
-            double[] initialGuessN = { 0, 0, 0, 0, 0, 0 };
-            double[] bestParams = NelderMead(parameters => objectiveFunction(Vector<double>.Build.DenseOfArray(parameters)), initialGuessN);
-
-
             // Define initial guess (must match 6 parameters)
             var initialGuess = Vector<double>.Build.DenseOfArray(new double[] { boreasBase.rx, boreasBase.ry, boreasBase.rz, boreasTool.rx, boreasTool.ry, boreasTool.rz });
 
@@ -166,52 +162,53 @@ namespace Test_Sensor_Fusion_Issues
             var bestResult = solver.FindMinimum(objective, initialGuess);
             var bestError = bestResult.FunctionInfoAtMinimum.Value;
 
-            Console.WriteLine($"Initial best error: {bestError:F6}");
+            //Console.WriteLine($"Initial best error: {bestError:F6}");
 
-            for (int i = 0; i < 10; i++) // Try 10 perturbations
-            {
-                Vector<double> perturbedGuess;
+            //for (int i = 0; i < 10; i++) // Try 10 perturbations
+            //{
+            //    Vector<double> perturbedGuess;
 
-                // Every 5th iteration, reset completely to a random starting point
-                if (i % 5 == 0)
-                {
-                    perturbedGuess = Vector<double>.Build.DenseOfArray(new double[]
-                    {
-                        (random.NextDouble() - 0.5) * 10,  // Larger random range
-                        (random.NextDouble() - 0.5) * 10,
-                        (random.NextDouble() - 0.5) * 10,
-                        (random.NextDouble() - 0.5) * 10,
-                        (random.NextDouble() - 0.5) * 10,
-                        (random.NextDouble() - 0.5) * 10
-                    });
+            //    // Every 5th iteration, reset completely to a random starting point
+            //    if (i % 5 == 0)
+            //    {
+            //        perturbedGuess = Vector<double>.Build.DenseOfArray(new double[]
+            //        {
+            //            (random.NextDouble() - 0.5) * 10,  // Larger random range
+            //            (random.NextDouble() - 0.5) * 10,
+            //            (random.NextDouble() - 0.5) * 10,
+            //            (random.NextDouble() - 0.5) * 10,
+            //            (random.NextDouble() - 0.5) * 10,
+            //            (random.NextDouble() - 0.5) * 10
+            //        });
 
-                    Console.WriteLine($"Iteration {i}: Full restart with random guess.");
-                }
-                else
-                {
-                    // Small perturbation around the best known solution
-                    perturbedGuess = bestResult.MinimizingPoint
-                        .Map(v => v + (random.NextDouble() - 0.5) * 0.1); // Increase perturbation range
-                }
+            //        Console.WriteLine($"Iteration {i}: Full restart with random guess.");
+            //    }
+            //    else
+            //    {
+            //        // Small perturbation around the best known solution
+            //        perturbedGuess = bestResult.MinimizingPoint
+            //            .Map(v => v + (random.NextDouble() - 0.5) * 0.1); // Increase perturbation range
+            //    }
 
-                // Solve again from the new start point
-                var newResult = solver.FindMinimum(objective, perturbedGuess);
-                var newError = newResult.FunctionInfoAtMinimum.Value;
+            //    // Solve again from the new start point
+            //    var newResult = solver.FindMinimum(objective, perturbedGuess);
+            //    var newError = newResult.FunctionInfoAtMinimum.Value;
 
-                Console.WriteLine($"Iteration {i}: New error = {newError:F6}");
+            //    Console.WriteLine($"Iteration {i}: New error = {newError:F6}");
 
-                // Keep the best solution
-                if (newError < bestError)
-                {
-                    bestResult = newResult;
-                    bestError = newError;
-                    Console.WriteLine($"Iteration {i}: Found new best solution with error {bestError:F6}");
-                }
-            }
+            //    // Keep the best solution
+            //    if (newError < bestError)
+            //    {
+            //        bestResult = newResult;
+            //        bestError = newError;
+            //        Console.WriteLine($"Iteration {i}: Found new best solution with error {bestError:F6}");
+            //    }
+            //}
 
             boreasBase = new cTransform(0, 0, 0, bestResult.MinimizingPoint[0], bestResult.MinimizingPoint[1], bestResult.MinimizingPoint[2]);
             boreasTool = new cTransform(0, 0, 0, bestResult.MinimizingPoint[3], bestResult.MinimizingPoint[4], bestResult.MinimizingPoint[5]);
 
+            Console.WriteLine("\nTransformed Boreas w/ Transformation Parameters:");
             testTransform(boreas, measured, boreasBase, boreasTool);
 
             // Output final best result
@@ -228,7 +225,7 @@ namespace Test_Sensor_Fusion_Issues
 
         public static double testTransform(List<cPose> boreas, List<cPose> measured, cTransform boreasBase, cTransform boreasTool)
         {
-            double sum = 0;
+            double sumsq = 0;
 
             // Ensure lists match in size
             if (boreas.Count != measured.Count)
@@ -252,10 +249,10 @@ namespace Test_Sensor_Fusion_Issues
                 double deltaRz = (normRz - measured[i].rz).m180p180();
 
                 // Sum of squared errors
-                sum += Math.Sqrt(Math.Pow(deltaRx, 2) + Math.Pow(deltaRy, 2) + Math.Pow(deltaRz, 2));
+                sumsq += (Math.Pow(deltaRx, 2) + Math.Pow(deltaRy, 2) + Math.Pow(deltaRz, 2));
 
             }
-            return Math.Sqrt(sum);
+            return Math.Sqrt(sumsq);
         }
 
 
