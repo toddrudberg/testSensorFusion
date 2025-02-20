@@ -36,74 +36,36 @@ namespace Test_Sensor_Fusion_Issues
 
             // Position the form in the upper-right quarter
             PositionForm();
+            cLHT FRSXform = new cLHT(0,0,0,0,0,2 * Math.PI / 180.0);
+            cPose testzyx = new cPose(0,0,0,-30,15,-15);
+            cLHT testXform = new cLHT();
+            testXform.setTransformFromEulerZYX(testzyx);
+            cPose testxyz = testXform.getPoseEulerXYZ();
 
 
-            //test normalizeOrientation
-            cTransform t = new cTransform(0, 0, 0, 0, 5, -5, 5);
-            cTransform result = t.getLHT().normalizeOrientation().getTransformEulerXYZ();
-            cTransform result2 = t.getLHT().getTransformEulerXYZ();
+            FRSXform = new cLHT();
+            for (int rz = -15; rz <= 15; rz+=15)
+            {
+                for( int ry = -15; ry <= 15; ry+=15)
+                {
+                    for( int rx = -15; rx <= 15; rx+=15)
+                    {
+                        cLHT eulerzyx = new cLHT();
+                        cPose peulerzyx = new cPose(0,0,0,rx,ry,rz);
+                        eulerzyx.setTransformFromEulerZYX(peulerzyx);
+                        eulerzyx = FRSXform * eulerzyx;
 
-            cLHT test = new cLHT();
-            test.M = cLHT.ensureOrthonormality(t.getLHT());
-            cTransform result3 = test.getTransformEulerXYZ();
+                        cPose peulerxyz = eulerzyx.getPoseEulerXYZ();
+                        Console.WriteLine($"eZYX: rz={rz,8:F3} ry={ry,8:F3} rx={rx,8:F3} eXYZ rx={peulerxyz.rx,8:F3}, ry={peulerxyz.ry,8:F3}, rz={peulerxyz.rz,8:F3}");
 
+                    }
+                }
 
-            Console.WriteLine();
-            Console.WriteLine("Original: " + t.getPose().ToString());
-            Console.WriteLine("Result: " + result.getPose().ToString());
-            Console.WriteLine("Result2: " + result2.getPose().ToString());
-            Console.WriteLine("Result3: " + result3.getPose().ToString());
-            Console.WriteLine();
+            }
 
-
-            Random random = new Random();
-
-            double OrientationErrorMagnitude = 2.0;
-            double linearErrorMagnitude = 5.0;
-
-
-            cPose Target1 = new cPose(0,0,0,0,0,0);
-            cPose Target2 = new cPose(5,0,0,0,0,0);
-            cPose Measured = new cPose(
-                    random.NextDouble() * linearErrorMagnitude + (Target1.X + Target2.X) / 2,
-                    random.NextDouble() * linearErrorMagnitude + (Target1.Y + Target2.Y) / 2,
-                    random.NextDouble() * linearErrorMagnitude + (Target1.Z + Target2.Z) / 2,
-                    random.NextDouble() * OrientationErrorMagnitude - OrientationErrorMagnitude / 2 + (Target1.rX + Target2.rX) / 2,
-                    random.NextDouble() * OrientationErrorMagnitude - OrientationErrorMagnitude / 2 + (Target1.rY + Target2.rY) / 2,
-                    random.NextDouble() * OrientationErrorMagnitude - OrientationErrorMagnitude / 2 + (Target1.rZ + Target2.rZ) / 2
-                );
-
-            cPose TPError = new cPose(0, 0, 0, 0, 0, 0);
-
-            cXYZ lastXYZGoal = new cXYZ(Target1.X, Target1.Y, Target1.Z);
-            cXYZ xyzGoal = new cXYZ(Target2.X, Target2.Y, Target2.Z);
-
-            cXYZ xyzMetrology = new cXYZ(Measured.x, Measured.y, Measured.z);
-            cXYZ xyzDeltaGoal = xyzGoal - lastXYZGoal;
-
-            cXYZ xyzVectorGoalMetrology = xyzMetrology - lastXYZGoal;
-            cXYZ xyzDeltaGoalUnitVector = xyzDeltaGoal * (1.0 / xyzDeltaGoal.getMagnitude);
-            cXYZ xParallel = xyzDeltaGoalUnitVector * (xyzDeltaGoalUnitVector * xyzVectorGoalMetrology);
-            cXYZ xPerpendicular = xyzVectorGoalMetrology - xParallel;
-
-            cLHT errorLHT = (Target2.getLHT() * !Measured.getLHT());
-            cLHT targetPrime = (Target2.getLHT() * errorLHT).normalizeOrientation();
-
-            targetPrime.M[0, 3] = Target2.X - xPerpendicular.X;
-            targetPrime.M[1, 3] = Target2.Y - xPerpendicular.Y;
-            targetPrime.M[2, 3] = Target2.Z - xPerpendicular.Z;
-
-            cPose newTarget = targetPrime.getPoseEulerXYZ();
-
-            cPose newTargetOldWay = new cPose(newTarget.x, newTarget.y, newTarget.z, Target2.rx - Measured.rx, Target2.ry - Measured.ry, Target2.rz - Measured.rz);
-
-            Console.WriteLine("Target1: " + Target1.ToString());
-            Console.WriteLine("Target2: " + Target2.ToString());
-            Console.WriteLine("Measured: " + Measured.ToString());
-            Console.WriteLine("TPError: " + TPError.ToString());
-            Console.WriteLine("New Target: " + newTarget.ToString());
-            Console.WriteLine("New Target Old " + newTargetOldWay.ToString());
         }
+
+
 
         private void LaunchConsole()
         {
