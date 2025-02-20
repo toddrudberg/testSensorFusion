@@ -36,32 +36,36 @@ namespace Test_Sensor_Fusion_Issues
 
             // Position the form in the upper-right quarter
             PositionForm();
-            cLHT FRSXform = new cLHT(0,0,0,0,0,2 * Math.PI / 180.0);
-            cPose testzyx = new cPose(0,0,0,-30,15,-15);
-            cLHT testXform = new cLHT();
-            testXform.setTransformFromEulerZYX(testzyx);
-            cPose testxyz = testXform.getPoseEulerXYZ();
+
+            Solver.Solve();
 
 
-            FRSXform = new cLHT();
-            for (int rz = -15; rz <= 15; rz+=15)
-            {
-                for( int ry = -15; ry <= 15; ry+=15)
-                {
-                    for( int rx = -15; rx <= 15; rx+=15)
-                    {
-                        cLHT eulerzyx = new cLHT();
-                        cPose peulerzyx = new cPose(0,0,0,rx,ry,rz);
-                        eulerzyx.setTransformFromEulerZYX(peulerzyx);
-                        eulerzyx = FRSXform * eulerzyx;
+            //cLHT FRSXform = new cLHT(0,0,0,0,0,2 * Math.PI / 180.0);
+            //cPose testzyx = new cPose(0,0,0,-30,15,-15);
+            //cLHT testXform = new cLHT();
+            //testXform.setTransformFromEulerZYX(testzyx);
+            //cPose testxyz = testXform.getPoseEulerXYZ();
 
-                        cPose peulerxyz = eulerzyx.getPoseEulerXYZ();
-                        Console.WriteLine($"eZYX: rz={rz,8:F3} ry={ry,8:F3} rx={rx,8:F3} eXYZ rx={peulerxyz.rx,8:F3}, ry={peulerxyz.ry,8:F3}, rz={peulerxyz.rz,8:F3}");
 
-                    }
-                }
+            //FRSXform = new cLHT();
+            //for (int rz = -15; rz <= 15; rz+=15)
+            //{
+            //    for( int ry = -15; ry <= 15; ry+=15)
+            //    {
+            //        for( int rx = -15; rx <= 15; rx+=15)
+            //        {
+            //            cLHT eulerzyx = new cLHT();
+            //            cPose peulerzyx = new cPose(0,0,0,rx,ry,rz);
+            //            eulerzyx.setTransformFromEulerZYX(peulerzyx);
+            //            eulerzyx = FRSXform * eulerzyx;
 
-            }
+            //            cPose peulerxyz = eulerzyx.getPoseEulerXYZ();
+            //            Console.WriteLine($"eZYX: rz={rz,8:F3} ry={ry,8:F3} rx={rx,8:F3} eXYZ rx={peulerxyz.rx,8:F3}, ry={peulerxyz.ry,8:F3}, rz={peulerxyz.rz,8:F3}");
+
+            //        }
+            //    }
+
+            //}
 
         }
 
