@@ -204,43 +204,5 @@ namespace Test_Sensor_Fusion_Issues
 
             return (rms, avg, stddev);
         }
-
-
-
-        public static double[] NelderMead(Func<double[], double> func, double[] start, int maxIterations = 1000)
-        {
-            int n = start.Length;
-            double[][] simplex = new double[n + 1][];
-
-            // Initialize simplex
-            for (int i = 0; i < n + 1; i++)
-            {
-                simplex[i] = (double[])start.Clone();
-                if (i > 0)
-                    simplex[i][i - 1] += 0.05; // Small shift to generate simplex
-            }
-
-            for (int iter = 0; iter < maxIterations; iter++)
-            {
-                Array.Sort(simplex, (a, b) => func(a).CompareTo(func(b)));
-
-                // Compute centroid
-                double[] centroid = new double[n];
-                for (int i = 0; i < n; i++)
-                    for (int j = 0; j < n; j++)
-                        centroid[j] += simplex[i][j] / n;
-
-                // Reflect worst point
-                double[] reflected = new double[n];
-                for (int j = 0; j < n; j++)
-                    reflected[j] = centroid[j] + (centroid[j] - simplex[n][j]);
-
-                if (func(reflected) < func(simplex[n - 1]))
-                    simplex[n] = reflected;
-            }
-
-            return simplex[0]; // Best solution
-        }
     }
-
 }
