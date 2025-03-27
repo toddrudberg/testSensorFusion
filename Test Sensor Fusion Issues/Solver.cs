@@ -15,9 +15,6 @@ namespace Test_Sensor_Fusion_Issues
 {
     internal class Solver
     {
-
-
-
         // Define the function to minimize: f(x) = (x - 3)^2
         public static void Solve(string dataFile)
         {
@@ -28,7 +25,7 @@ namespace Test_Sensor_Fusion_Issues
             cTransform boreasTool = new cTransform(0, 0, 0, 180, 0, 90);
 
             string[] data = System.IO.File.ReadAllLines(dataFile);
-            
+
             for (int i = 1; i < data.Length; i++)
             {
                 string s = data[i];
@@ -137,7 +134,7 @@ namespace Test_Sensor_Fusion_Issues
             var solver = new BfgsMinimizer(1e-8, 1e-8, 10000);
 
             // Initial best guess from normal optimization
-            var bestResult = solver.FindMinimum(objectiveBaseOnly, initialGuess);            
+            var bestResult = solver.FindMinimum(objectiveBaseOnly, initialGuess);
 
             initialGuess = bestResult.MinimizingPoint;
             bestResult = solver.FindMinimum(objective, initialGuess);
@@ -161,7 +158,6 @@ namespace Test_Sensor_Fusion_Issues
             Console.WriteLine($"A3S = {result.avg + 3 * result.stddev:F6}");
 
         }
-
 
         public static (double rms, double avg, double stddev) testTransform(
             List<cPose> boreas, List<cPose> measured, 

@@ -2,7 +2,7 @@ using ArtemisCore.Calculations;
 using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using SolverApp;
+
 
 namespace Test_Sensor_Fusion_Issues
 {
@@ -39,40 +39,6 @@ namespace Test_Sensor_Fusion_Issues
       PositionForm();
 
       Solver.Solve(@"C:\LocalDev\testSensorFusion\Data.csv");
-
-      // SolverPlatform.Environment _spe = new
-      // SolverPlatform.Environment("r0028082");
-
-      // cFLSsolver solver = new cFLSsolver();
-      // solver.SolveMe();
-
-
-      //cLHT FRSXform = new cLHT(0,0,0,0,0,2 * Math.PI / 180.0);
-      //cPose testzyx = new cPose(0,0,0,-30,15,-15);
-      //cLHT testXform = new cLHT();
-      //testXform.setTransformFromEulerZYX(testzyx);
-      //cPose testxyz = testXform.getPoseEulerXYZ();
-
-
-      //FRSXform = new cLHT();
-      //for (int rz = -15; rz <= 15; rz+=15)
-      //{
-      //    for( int ry = -15; ry <= 15; ry+=15)
-      //    {
-      //        for( int rx = -15; rx <= 15; rx+=15)
-      //        {
-      //            cLHT eulerzyx = new cLHT();
-      //            cPose peulerzyx = new cPose(0,0,0,rx,ry,rz);
-      //            eulerzyx.setTransformFromEulerZYX(peulerzyx);
-      //            eulerzyx = FRSXform * eulerzyx;
-
-      //            cPose peulerxyz = eulerzyx.getPoseEulerXYZ();
-      //            Console.WriteLine($"eZYX: rz={rz,8:F3} ry={ry,8:F3} rx={rx,8:F3} eXYZ rx={peulerxyz.rx,8:F3}, ry={peulerxyz.ry,8:F3}, rz={peulerxyz.rz,8:F3}");
-
-      //        }
-      //    }
-
-      //}
 
     }
 
